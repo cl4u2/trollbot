@@ -1,1 +1,1 @@
- - use dict instead of list for quotes
+ - catch signal to reread quotes file

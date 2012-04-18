@@ -20,11 +20,11 @@ quotestxt = 'quotes.txt'
 global botusername
 botusername = "trollbot0"
 
-quotes = []
+quotes = set()
 f = open(quotestxt)
 for line in f:
     if len(line.strip()) > 0:
-        quotes.append(line.strip())
+        quotes.add(line.strip())
 f.close()
 
 
@@ -42,7 +42,7 @@ i18n['en']['TROLLBOT']='%s'
 def trollbotHandler(user,command,args,mess):
     print "[TROLLBOT]: triggered!"
     addHandler(user,"add","%s %s" % (command, args), mess)
-    mychoice = random.choice(quotes)
+    mychoice = random.choice(list(quotes))
     mychoicesplit = [ w.strip() for w in mychoice.split(" ") ]
     if len(mychoicesplit) == 1 and mychoicesplit[0].lower().startswith("trollbot"):
         return
@@ -71,14 +71,16 @@ def addHandler(user,command,args,mess):
     argsplit = [ s.strip() for s in args.split(' ') if len(s.strip()) > 0 ]
     if len(argsplit) == 0 or (len(argsplit) == 1 and (argsplit[0].lower().startswith("trollbot") or argsplit[0] == "None")):
         return "ADD", "not added"
+    comargs = " ".join(argsplit)
+    if comargs in quotes:
+        return "ADD", "not added"
     f = open(quotestxt, 'a')
     try:
-        comargs = " ".join(argsplit)
         f.write(comargs + u"\n")
     except UnicodeEncodeError:
         pass
     f.close()
-    quotes.append(comargs)
+    quotes.add(comargs)
     return "ADD", "added: %s" % comargs
 
 i18n['en']['HU']='%s'
@@ -131,7 +133,7 @@ def messageCB(conn,mess):
         reply=commands[cmd](user,command,args,mess)
     else:
         rint = random.randint(0,100)
-        if text.find("trollbot") != -1 or mess.getType() == "chat" or rint <= probability:
+        if (text and text.find("trollbot") != -1) or mess.getType() == "chat" or rint <= probability:
             print "[TROLLBOT]: triggering! (%d / %d [%s])" % (rint, probability, mess.getType())
             reply = trollbotHandler(user,command,args,mess)
             if reply[0] == 'NONE':
