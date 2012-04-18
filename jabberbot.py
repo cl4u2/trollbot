@@ -44,17 +44,23 @@ def trollbotHandler(user,command,args,mess):
     addHandler(user,"add","%s %s" % (command, args), mess)
     mychoice = random.choice(quotes)
     mychoicesplit = [ w.strip() for w in mychoice.split(" ") ]
-    if mychoicesplit[0].lower().startswith("trollbot") and len(mychoicesplit) > 1:
-        try:
-            if mess.getType() == "chat":
-                uname = str(user).split('@')[0]
+    if len(mychoicesplit) == 1 and mychoicesplit[0].lower().startswith("trollbot"):
+        return
+    try:
+        if mess.getType() == "chat":
+            uname = str(user).split('@')[0]
+        else:
+            uname = str(user).split('/')[1]
+        def tro(word):
+            if word.startswith("trollbot"):
+                return uname
             else:
-                uname = str(user).split('/')[1]
-            mychoicefiltered = [uname] + mychoicesplit[1:]
-        except IndexError:
-            mychoicefiltered = mychoicesplit[1:]
-    else:
-        mychoicefiltered = mychoicesplit[:]
+                return word
+        mychoicefiltered = [tro(w) for w in mychoicesplit]
+    except IndexError:
+        mychoicefiltered = mychoicesplit[1:]
+
+
     return "TROLLBOT", " ".join(mychoicefiltered)
 
 def trollbot0Handler(user,command,args,mess):
@@ -125,7 +131,7 @@ def messageCB(conn,mess):
         reply=commands[cmd](user,command,args,mess)
     else:
         rint = random.randint(0,100)
-        if rint <= probability or mess.getType() == "chat":
+        if text.find("trollbot") != -1 or mess.getType() == "chat" or rint <= probability:
             print "[TROLLBOT]: triggering! (%d / %d [%s])" % (rint, probability, mess.getType())
             reply = trollbotHandler(user,command,args,mess)
             if reply[0] == 'NONE':
