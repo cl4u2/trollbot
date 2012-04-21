@@ -1,1 +1,4 @@
- - catch signal to reread quotes file
+ - catch signal to reread quotes file 
+ - catch signal to eat all messages
+ - remove hardcoded stuff
+ - support unicode (accented letters)

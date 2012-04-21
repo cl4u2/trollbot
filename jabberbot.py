@@ -9,7 +9,7 @@
 import sys
 import xmpp
 import random
-    
+
 room="ninux.org@chat.jabber.ninux.org" 
 room="prova@chat.jabber.ninux.org" 
 roomu = ""
@@ -50,7 +50,7 @@ def trollbotHandler(user,command,args,mess):
         if mess.getType() == "chat":
             uname = str(user).split('@')[0]
         else:
-            uname = str(user).split('/')[1]
+            uname = str(user).split('/')[1].split('@')[0]
         def tro(word):
             if word.startswith("trollbot"):
                 return uname
@@ -93,8 +93,13 @@ i18n['en']['INVITE']='%s'
 def inviteHandler(user,command,args,mess):
     if mess.getType() == "groupchat":
         return 
+    global eatmessages
+    eatmessages = 40
     global botusername
-    roomj="%s@chat.jabber.ninux.org/%s" % (args, botusername)
+    if args.find("@") == -1:
+            roomj="%s@chat.jabber.ninux.org/%s" % (args, botusername)
+    else:
+            roomj="%s/%s" % (args, botusername)
     conn.send(xmpp.Presence(to=roomj))
     return "INVITE", "invitation accepted"
 
@@ -133,7 +138,7 @@ def messageCB(conn,mess):
         reply=commands[cmd](user,command,args,mess)
     else:
         rint = random.randint(0,100)
-        if (text and text.find("trollbot") != -1) or mess.getType() == "chat" or rint <= probability:
+        if (text and text.find("troll") != -1) or mess.getType() == "chat" or rint <= probability:
             print "[TROLLBOT]: triggering! (%d / %d [%s])" % (rint, probability, mess.getType())
             reply = trollbotHandler(user,command,args,mess)
             if reply[0] == 'NONE':
