@@ -103,6 +103,24 @@ def inviteHandler(user,command,args,mess):
     conn.send(xmpp.Presence(to=roomj))
     return "INVITE", "invitation accepted"
 
+i18n['en']['SCIO']='%s'
+def scioHandler(user,command,args,mess):
+    if mess.getType() != "groupchat":
+        return
+    user = mess.getFrom()
+    global botusername
+    try:
+        roomr = str(user).split('/')[0]
+    except IndexError:
+        return
+    roomj="%s/%s" % (roomr, botusername)
+    conn.send(xmpp.Presence(to=roomj, typ='unavailable'))
+    return "SCIO", "via!"
+
+i18n['en']['GOTO']='%s'
+def gotoHandler(user,command,args,mess):
+    return scioHandler(user,command,args,mess)
+
 ########################### user handlers stop ###################################
 ############################ bot logic start #####################################
 i18n['en']["UNKNOWN COMMAND"]='Unknown command "%s". Try "help"'
