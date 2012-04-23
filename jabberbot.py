@@ -121,6 +121,23 @@ i18n['en']['GOTO']='%s'
 def gotoHandler(user,command,args,mess):
     return scioHandler(user,command,args,mess)
 
+i18n['en']['REREAD']='%s'
+def rereadHandler(user,command,args,mess):
+    if mess.getType() == "groupchat":
+        return
+    i = 0
+    newquotes = set()
+    f = open(quotestxt)
+    for line in f:
+        if len(line.strip()) > 0:
+            newquotes.add(line.strip())
+            i+=1
+    f.close()
+    global quotes
+    quotes = set()
+    quotes = newquotes
+    return "REREAD", "reread %d lines" % (i,)
+
 ########################### user handlers stop ###################################
 ############################ bot logic start #####################################
 i18n['en']["UNKNOWN COMMAND"]='Unknown command "%s". Try "help"'
