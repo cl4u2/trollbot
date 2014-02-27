@@ -138,17 +138,21 @@ def rereadHandler(user,command,args,mess):
     quotes = newquotes
     return "REREAD", "reread %d lines" % (i,)
 
+i18n['en']['EATALL']='%s'
+def eatallHandler(user,command,args,mess):
+    if mess.getType() == "groupchat":
+        return
+    global eatmessages
+    atemessages = eatmessages
+    eatmessages = 0
+    return "EATALL", "ate %d lines" % (atemessages,)
+
 ########################### user handlers stop ###################################
 ############################ bot logic start #####################################
 i18n['en']["UNKNOWN COMMAND"]='Unknown command "%s". Try "help"'
 i18n['en']["UNKNOWN USER"]="I do not know you. Register first."
 
 def messageCB(conn,mess):
-    global eatmessages 
-    if eatmessages >=0:
-        eatmessages = eatmessages - 1
-        print "[TROLLBOT]: ate message (%d left)" % eatmessages
-        return
     #global roomu
     #conn.send(xmpp.Presence(to=roomu))
     user=mess.getFrom()
@@ -165,6 +169,12 @@ def messageCB(conn,mess):
     cmd=command
     if command: 
         cmd=command.lower()
+
+    global eatmessages 
+    if cmd != "eatall" and eatmessages >=0:
+        eatmessages = eatmessages - 1
+        print "[TROLLBOT]: ate message (%d left)" % eatmessages
+        return
 
     #reply=("TROLLBOT",cmd)
     #reply=commands['TROLLBOT'](user,command,args,mess)
